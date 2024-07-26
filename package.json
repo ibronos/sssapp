@@ -1,0 +1,17 @@
+{
+  "name": "sssapp",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "concurrently \"npm install\" \"cd client && npm install\" \"cd server && npm install\"",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "concurrently \"cd client && npm run dev\" \"cd server && nodemon server.js\"",
+    "start": "node server"
+  },
+  "author": "isaidi",
+  "license": "ISC",
+  "dependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
