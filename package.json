@@ -5,9 +5,9 @@
   "main": "index.js",
   "scripts": {
     "build": "concurrently \"npm install\" \"cd client && npm install\" \"cd server && npm install\"",
+    "build:db": "concurrently \"cd server && npx prisma db push\"",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "concurrently \"cd client && npm run dev\" \"cd server && nodemon server.js\"",
-    "start": "node server"
+    "dev": "concurrently \"cd client && npm run dev\" \"cd server && nodemon server.js\""
   },
   "author": "isaidi",
   "license": "ISC",

@@ -1,13 +1,80 @@
-import React from 'react';
+import React,  { useState, SyntheticEvent, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import Breadcrumb from '../../components/Breadcrumbs/Breadcrumb';
 import LogoDark from '../../images/logo/logo-dark.svg';
 import Logo from '../../images/logo/logo.svg';
+import axios from "axios";
 
 const SignIn: React.FC = () => {
+
+  const email = useRef("");
+  const password = useRef("");
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleSubmit = async (e: SyntheticEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+  
+    let data = {
+        email: email.current,
+        password: password.current,
+    };
+
+    try {
+
+        await axios.post(`${import.meta.env.VITE_SERVER_HOST}/signin`, data )
+        .then(loginRes => {
+          localStorage.setItem("auth-token", loginRes.data.data.token);
+          // console.log(loginRes);
+          alert('success!');            
+        })
+        .catch((error) => {
+            throw new Error(error)
+        })
+        .finally(() => {
+            setIsLoading(false);
+        });
+    } 
+    catch (error: any) {
+        console.error(error);
+    }
+
+  };
+
+  const handleSignout = async (e: SyntheticEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    try {
+      await axios.get(`${import.meta.env.VITE_SERVER_HOST}/signout`, { withCredentials: true })
+      .then(() => {
+          alert('data updated!');
+      })
+      .catch((error) => {
+          throw new Error(error)
+      })
+      .finally(() => {
+          setIsLoading(false);
+      });
+  } 
+  catch (error: any) {
+      console.error(error);
+  }
+  }
+
+  if (isLoading) { 
+    return <p>Loading...</p> 
+  };
+
   return (
     <>
-      {/* <Breadcrumb pageName="Sign In" /> */}
+
+      {/* <form onSubmit={handleSignout} >
+          <input
+                    type="submit"
+                    value="Sign out"
+                    className="w-full cursor-pointer rounded-lg border border-primary bg-primary p-4 text-white transition hover:bg-opacity-90"
+                  />
+      </form> */}
 
       <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
         <div className="flex flex-wrap items-center">
@@ -155,16 +222,18 @@ const SignIn: React.FC = () => {
                 Sign In to TailAdmin
               </h2>
 
-              <form>
+              <form onSubmit={handleSubmit} >
                 <div className="mb-4">
                   <label className="mb-2.5 block font-medium text-black dark:text-white">
                     Email
                   </label>
                   <div className="relative">
                     <input
+                      onChange={(e) => email.current = e.target.value}
                       type="email"
                       placeholder="Enter your email"
                       className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                      required
                     />
 
                     <span className="absolute right-4 top-4">
@@ -189,10 +258,11 @@ const SignIn: React.FC = () => {
 
                 <div className="mb-6">
                   <label className="mb-2.5 block font-medium text-black dark:text-white">
-                    Re-type Password
+                    Password
                   </label>
                   <div className="relative">
                     <input
+                      onChange={(e) => password.current = e.target.value}
                       type="password"
                       placeholder="6+ Characters, 1 Capital letter"
                       className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"

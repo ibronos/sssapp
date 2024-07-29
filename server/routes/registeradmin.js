@@ -2,11 +2,11 @@ const express = require("express");
 const { PrismaClient } = require("@prisma/client");
 const bcrypt =  require("bcrypt");
  
-const regAdminRoute = express.Router(); 
+const router = express.Router(); 
 
 const prisma = new PrismaClient();
  
-regAdminRoute.route("/registeradmin").post(async function (req, res) {
+router.route("/registeradmin").post(async function (req, res) {
 
   const totalRole = await prisma.role.count();
   const roleData = [
@@ -31,16 +31,14 @@ regAdminRoute.route("/registeradmin").post(async function (req, res) {
     },
   })
 
-  const userAdminCreate = await prisma.user.create({
+  await prisma.user.create({
     data:{
         email: req.body.email,
         name: req.body.name,
-        password: await bcrypt.hash(req.body.password, Number(process.env.PASSWORD_HASH)),
+        password: await bcrypt.hash(req.body.password, Number(process.env.BCRYPT_HASH)),
         roleId: getAdminRoleId.id
     }
-});
-
-  // console.log(getAdminRoleId.id);
+  });
 
   return res.json(
       {
@@ -52,4 +50,4 @@ regAdminRoute.route("/registeradmin").post(async function (req, res) {
 
 });
 
-module.exports = regAdminRoute;
+module.exports = router;

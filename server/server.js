@@ -6,14 +6,15 @@ const app = express();
 var fs = require('fs');
 
 const cors = require("cors");
-
 app.use(cors());
+
 app.use(express.json());
 
+// ROUTES 
 fs.readdirSync('./routes').map( (route) => app.use(require(`./routes/${route}`)) );
 
 // get driver connection
-const database = require("./db/database");
+const database = require("./prisma/prismaConnect");
 
 app.listen(port, async() => {
 

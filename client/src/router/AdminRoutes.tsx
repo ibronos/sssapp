@@ -1,9 +1,11 @@
 import { Route, Routes, useLocation } from 'react-router-dom';
 
+import ProtectedRoute from './ProtectedRoute';
+
 import PageTitle from '../components/PageTitle';
 import SignIn from '../pages/Authentication/SignIn';
 import SignUp from '../pages/Authentication/SignUp';
-import Calendar from '../pages/Calendar';
+// import Calendar from '../pages/Calendar';
 import Chart from '../pages/Chart';
 import ECommerce from '../pages/Dashboard/ECommerce';
 import FormElements from '../pages/Form/FormElements';
@@ -20,29 +22,30 @@ const AdminRoutes = () => {
     return  (
 
         <Routes>
-            <Route path="/admin" element={ <DefaultLayout /> } >
+             <Route element={<ProtectedRoute />} >
+                <Route path="/admin" element={ <DefaultLayout /> } >
 
-                <Route
-                    path="dashboard"
-                    element={
-                        <>
-                            <PageTitle title="eCommerce Dashboard | TailAdmin - Tailwind CSS Admin Dashboard Template" />
-                            <ECommerce />
-                        </>
-                    }
-                />
+                    <Route
+                        path="dashboard"
+                        element={
+                            <>
+                                <PageTitle title="eCommerce Dashboard | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+                                <ECommerce />
+                            </>
+                        }
+                    />
 
-                <Route
-                    path="profile"
-                    element={
-                        <>
-                        <PageTitle title="Profile | TailAdmin - Tailwind CSS Admin Dashboard Template" />
-                        <Profile />
-                        </>
-                    }
-                />
+                    <Route
+                        path="profile"
+                        element={
+                            <>
+                            <PageTitle title="Profile | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+                            <Profile />
+                            </>
+                        }
+                    />
 
-                <Route
+                    <Route
                     path="forms/form-elements"
                     element={
                         <>
@@ -124,7 +127,9 @@ const AdminRoutes = () => {
                     }
                     />
 
-            </Route>
+                </Route>
+             </Route>
+        
         </Routes>
    
     )
