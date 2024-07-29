@@ -4,8 +4,8 @@ const bcrypt = require('bcrypt');
 const jwt = require("jsonwebtoken");
 const { PrismaClient } = require("@prisma/client");
 const auth = require("../middleware/auth");
-
 const prisma = new PrismaClient();
+const {setDefaultRole}  = require("../helper/role");
 
 router.route("/signin").post( async function (req, res) {
 
@@ -42,7 +42,67 @@ router.route("/signin").post( async function (req, res) {
 
 });
 
+router.route("/registeradmin").post(async function (req, res) {
 
+
+    await setDefaultRole();
+  
+    const getAdminRoleId= await prisma.role.findUnique({
+      where: {
+        slug: 'admin',
+      },
+      select: {
+        id: true
+      },
+    })
+  
+    await prisma.user.create({
+      data:{
+          email: req.body.email,
+          name: req.body.name,
+          password: await bcrypt.hash(req.body.password, Number(process.env.BCRYPT_HASH)),
+          roleId: getAdminRoleId.id
+      }
+    });
+  
+    return res.json(
+        {
+            success: true,
+            message: "Admin user created!",
+            data: {}
+        }
+    );
+  
+});
+
+router.route("/users", auth).get( async function (req, res) {
+
+    console.log("usersss");
+
+    const users = await prisma.user.findMany({
+        select: {
+            id: true,
+            name: true,
+            email: true,
+            role: {
+                select: {
+                    id: true,
+                    name: true
+                }
+            }
+        }
+    });
+
+    return res.json(
+        {
+            success: true,
+            message: "Admin user created!",
+            data: users
+        }
+    );
+
+});
+  
 // TO CHECK IF TOKEN IS VALID
 router.post("/tokenisvalid", async (req, res) => {
     
@@ -112,40 +172,4 @@ router.post("/tokenisvalid", async (req, res) => {
 });
 
 
-// to get the users credentials
-router.get("/admin", auth, async (req, res) => {
-
-    let db_connect = dbo.getDb();
-
-    let o_id = new ObjectId(req.user); 
-
-    const user = await db_connect.collection("user")
-    .findOne( { "_id" : o_id } )
-    .then(
-        (data) => { 
-            return data; 
-        }
-    );
-
-    if( !user || Number(user.length < 1) ) {
-        return res.json({
-            success: false,
-            message: "user not found",
-            data: {}
-        });
-    }
-
-
-    return res.json({
-      success: true,
-      message: "user found",
-      data: {
-        id: user._id,
-        email: user.email
-      }
-     
-    });
-
-});
- 
 module.exports = router;
