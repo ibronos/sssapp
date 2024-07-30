@@ -17,7 +17,7 @@ const Index: React.FC = () => {
             await axios.get(`${import.meta.env.VITE_SERVER_HOST}/users`)
             .then(
                 response => {
-                    console.log(response.data);
+                    // console.log(response.data);
                     if(response.data.success){
                         setItems(response.data.data);
                     }
@@ -39,6 +39,23 @@ const Index: React.FC = () => {
     const handleEdit = () => {
       setEditPage(!editPage); 
     }
+
+    const handleDelete = async (id: number) => {
+      if (confirm(`Are you sure want to delete ${id}?`) == true) {
+          await axios.delete(`${import.meta.env.VITE_SERVER_HOST}/user/${id}`)
+          .then(() => {
+              alert('deleted successfully');
+          })
+          .catch((error) => {
+              throw new Error(error)
+          })
+          .finally(() => {
+              window.location.reload(); 
+          });
+        } else {
+          window.location.reload(); 
+        }
+  };
 
     const handlePageId = (id: number | string) => {
       setPageId(id);
@@ -83,6 +100,9 @@ const Index: React.FC = () => {
                 <th className="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white">
                   Role
                 </th>
+                <th className="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white">
+                  Verified
+                </th>
                 <th className="py-4 px-4 font-medium text-black dark:text-white">
                   Actions
                 </th>
@@ -109,6 +129,12 @@ const Index: React.FC = () => {
                       {item.role.name}
                     </p>
                   </td>
+
+                  <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
+                    <p className="text-black dark:text-white">
+                      {item.is_verified ? "yes" : "no"}
+                    </p>
+                  </td>
                 
                   <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
                     <div className="flex items-center space-x-3.5">
@@ -131,7 +157,7 @@ const Index: React.FC = () => {
                           />
                         </svg>
                       </button>
-                      <button className="hover:text-primary">
+                      <button onClick={ () => { handleDelete(item.id); } } className="hover:text-primary">
                         <svg
                           className="fill-current"
                           width="18"

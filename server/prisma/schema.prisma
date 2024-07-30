@@ -8,18 +8,19 @@ datasource db {
   relationMode = "prisma"
 }
 
-model User {
+model user {
   id    Int     @id @default(autoincrement())
   email String  @unique
   name  String
   password String
-  role Role @relation(fields: [roleId], references: [id])
-  roleId Int
+  role role @relation(fields: [role_id], references: [id])
+  role_id Int
+  is_verified Int @default(0) @db.TinyInt
 }
 
-model Role {
+model role {
   id    Int     @id @default(autoincrement())
   slug  String @unique
   name  String
-  user User[]
+  user user[]
 }

@@ -3,7 +3,7 @@ const prisma = new PrismaClient();
 const bcrypt = require('bcrypt');
 const {setDefaultRole}  = require("./role");
 
-async function signUp(req, res, roleSlug) {
+async function signUp(req, res, roleSlug, isVerified) {
 
     let status = {
         success: true,
@@ -27,7 +27,8 @@ async function signUp(req, res, roleSlug) {
             email: req.body.email,
             name: req.body.name,
             password: await bcrypt.hash(req.body.password, Number(process.env.BCRYPT_HASH)),
-            roleId: getAdminRoleId.id
+            role_id: getAdminRoleId.id,
+            is_verified: isVerified
         }
         });    
 

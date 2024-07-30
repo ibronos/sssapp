@@ -21,7 +21,7 @@ const ProtectedRoute = () => {
                 await axios.post(`${import.meta.env.VITE_SERVER_HOST}/tokenisvalid`)
                 .then(
                     response => {
-                        // console.log(response.data);
+                        console.log(response.data);
                         if(response.data.success){
                             setUserData({
                                 isLogin: true,

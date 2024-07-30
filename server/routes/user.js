@@ -61,7 +61,8 @@ router.route("/signup").post(async function (req, res) {
 router.route("/registeradmin").post(async function (req, res) {
 
     const roleSlug = "admin";
-    let singupFunc = await signUp(req, res, roleSlug);
+    const isVerified = 1;
+    let singupFunc = await signUp(req, res, roleSlug, isVerified);
   
     return res.json(
         {
@@ -80,6 +81,7 @@ router.route("/users").get(auth, async function (req, res) {
             id: true,
             name: true,
             email: true,
+            is_verified: true,
             role: {
                 select: {
                     id: true,
@@ -102,7 +104,8 @@ router.route("/users").get(auth, async function (req, res) {
 router.route("/user").post(auth, async function (req, res) {
 
     const roleSlug = req.body.role;
-    let singupFunc = await signUp(req, res, roleSlug);
+    const isVerified = req.body.is_verified;
+    let singupFunc = await signUp(req, res, roleSlug, isVerified);
   
     return res.json(
         {
@@ -124,7 +127,8 @@ router.route("/user/:id").get(auth, async function (req, res) {
             email: true,
             name: true,
             password: true,
-            role: true
+            role: true,
+            is_verified: true
         },
       })
   
@@ -171,7 +175,8 @@ router.route("/user/:id").patch(auth, async function (req, res) {
             name: req.body.name,
             email: req.body.email,
             password: passUpdate,
-            roleId: getUSerRoleId.id
+            role_id: getUSerRoleId.id,
+            is_verified: req.body.is_verified
         }
     });
   
@@ -199,7 +204,7 @@ router.route("/user/:id").delete(auth, async function (req, res) {
             data: user
         }
     );
-    
+
 });
 
 // TO CHECK IF TOKEN IS VALID
