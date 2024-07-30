@@ -5,7 +5,7 @@ const jwt = require("jsonwebtoken");
 const { PrismaClient } = require("@prisma/client");
 const auth = require("../middleware/auth");
 const prisma = new PrismaClient();
-const {signUp}  = require("../helper/singup");
+const {signUp}  = require("../helper/signup");
 
 
 router.route("/signin").post( async function (req, res) {
@@ -97,6 +97,109 @@ router.route("/users").get(auth, async function (req, res) {
         }
     );
 
+});
+
+router.route("/user").post(auth, async function (req, res) {
+
+    const roleSlug = req.body.role;
+    let singupFunc = await signUp(req, res, roleSlug);
+  
+    return res.json(
+        {
+            success: singupFunc.success,
+            message: singupFunc.message,
+            data: {}
+        }
+    );
+  
+});
+
+router.route("/user/:id").get(auth, async function (req, res) {
+
+    const user = await prisma.user.findUnique({
+        where: {
+          id: Number(req.params.id),
+        },
+        select: {
+            email: true,
+            name: true,
+            password: true,
+            role: true
+        },
+      })
+  
+    return res.json(
+        {
+            success: true,
+            message: "user",
+            data: user
+        }
+    );
+  
+});
+
+router.route("/user/:id").patch(auth, async function (req, res) {
+
+    let passUpdate;
+
+    if( req.body.password && req.body.password != "" ){
+        passUpdate = await bcrypt.hash(password, Number(process.env.BCRYPT_HASH));
+    } else {
+        const userPass = await prisma.user.findUnique({
+            where: {
+                id: Number(req.params.id)
+            }
+        });
+
+        passUpdate = userPass?.password;
+    }
+
+    const getUSerRoleId = await prisma.role.findUnique({
+        where: {
+            slug: req.body.role,
+        },
+        select: {
+            id: true
+        },
+    })
+
+    const user = await prisma.user.update({
+        where:{
+            id: Number(req.params.id)
+        },
+        data: {
+            name: req.body.name,
+            email: req.body.email,
+            password: passUpdate,
+            roleId: getUSerRoleId.id
+        }
+    });
+  
+    return res.json(
+        {
+            success: true,
+            message: "user",
+            data: user
+        }
+    );
+  
+});
+
+router.route("/user/:id").delete(auth, async function (req, res) {
+    const user = await prisma.user.delete({
+        where:{
+            id: Number(req.params.id)
+        }
+    });
+
+    return res.json(
+        {
+            success: true,
+            message: "user",
+            data: user
+        }
+    );
+    
 });
 
 // TO CHECK IF TOKEN IS VALID
