@@ -5,6 +5,7 @@ import PageTitle from '../components/PageTitle';
 import DefaultLayout from '../layout/DefaultLayout';
 
 import User from '../pages/User';
+import Verifikator from '../pages/Verifikator';
 
 const AdminRoutes = () => {
     return  (
@@ -19,6 +20,16 @@ const AdminRoutes = () => {
                             <>
                                 <PageTitle title="Dashboard | User" />
                                 <User />
+                            </>
+                        }
+                    />
+
+                    <Route
+                        path="verifikator"
+                        element={
+                            <>
+                                <PageTitle title="Dashboard | Verifikator" />
+                                <Verifikator />
                             </>
                         }
                     />

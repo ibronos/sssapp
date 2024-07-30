@@ -1,7 +1,8 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useContext} from 'react';
 import Breadcrumb from '../../components/Breadcrumbs/Breadcrumb';
 import axios from 'axios';
 import Edit from './edit';
+import { UserContext } from '../../router/ProtectedRoute';
 
 const Index: React.FC = () => {
 
@@ -10,6 +11,7 @@ const Index: React.FC = () => {
     const [items, setItems] = useState([]);
     const [editPage, setEditPage] = useState(false);
     const [pageId, setPageId] =useState<number | string | null>(null);
+    const userContext  = useContext(UserContext);
 
     const loadData = async () => {
 
@@ -70,6 +72,11 @@ const Index: React.FC = () => {
     if(loading) {
         return <p>loading..</p>;
     }
+
+    if( userContext.user.role.slug == "user" ){
+      return <h1>Not allowed</h1>
+    }
+
 
     if(editPage){
       return (

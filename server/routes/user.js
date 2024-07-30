@@ -10,7 +10,7 @@ const {signUp}  = require("../helper/signup");
 
 router.route("/signin").post( async function (req, res) {
 
-    const user = await prisma.user.findFirst(
+    const user = await prisma.user.findUnique(
         { where: { 
             email: req.body.email
         } },
@@ -18,7 +18,8 @@ router.route("/signin").post( async function (req, res) {
 
     if( user &&  (await bcrypt.compare(req.body.password, user.password)) ) {
 
-        const token = jwt.sign({ id: user._id }, "passwordKey");
+        // const token = jwt.sign({ id: user.id }, process.env.JWT_KEY);
+        const token = jwt.sign({ id: user.id, email: user.email }, process.env.JWT_KEY, { expiresIn: '1h' });
 
         return res.json(
             {
@@ -76,20 +77,42 @@ router.route("/registeradmin").post(async function (req, res) {
 
 router.route("/users").get(auth, async function (req, res) {
 
-    const users = await prisma.user.findMany({
-        select: {
-            id: true,
-            name: true,
-            email: true,
-            is_verified: true,
-            role: {
-                select: {
-                    id: true,
-                    name: true
+    if( req.query.is_verified == "1" || req.query.is_verified == "0" ) {
+      
+        users = await prisma.user.findMany({
+            select: {
+                id: true,
+                name: true,
+                email: true,
+                is_verified: true,
+                role: {
+                    select: {
+                        id: true,
+                        name: true
+                    }
+                }
+            }, 
+            where: {
+                is_verified: parseInt(req.query.is_verified)
+            }
+        });
+    } else {
+        
+        users = await prisma.user.findMany({
+            select: {
+                id: true,
+                name: true,
+                email: true,
+                is_verified: true,
+                role: {
+                    select: {
+                        id: true,
+                        name: true
+                    }
                 }
             }
-        }
-    });
+        });
+    }
 
     return res.json(
         {
@@ -147,7 +170,7 @@ router.route("/user/:id").patch(auth, async function (req, res) {
     let passUpdate;
 
     if( req.body.password && req.body.password != "" ){
-        passUpdate = await bcrypt.hash(password, Number(process.env.BCRYPT_HASH));
+        passUpdate = await bcrypt.hash(req.body.password, Number(process.env.BCRYPT_HASH));
     } else {
         const userPass = await prisma.user.findUnique({
             where: {
@@ -222,7 +245,8 @@ router.post("/tokenisvalid", async (req, res) => {
         });
       }
 
-      const verified = jwt.verify(token, "passwordKey");
+      const verified = jwt.verify(token, process.env.JWT_KEY);
+
       if (!verified) {
         return res.json({
             success: false,
@@ -233,15 +257,15 @@ router.post("/tokenisvalid", async (req, res) => {
         });
       }
 
-      const user = await prisma.user.findFirst(
+      const user = await prisma.user.findUnique(
         { where: { 
-            id: req.body.id
+            id: verified.id
         } },
       );
 
       const role = await prisma.role.findFirst(
         { where: { 
-            id: user.role
+            id: user.role_id
         } },
       );
 
