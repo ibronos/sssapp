@@ -3,12 +3,14 @@ import { Link } from 'react-router-dom';
 import LogoDark from '../../images/logo/logo-dark.svg';
 import Logo from '../../images/logo/logo.svg';
 import axios from "axios";
+import { useNavigate } from 'react-router-dom';
 
 const SignIn: React.FC = () => {
 
   const email = useRef("");
   const password = useRef("");
   const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: SyntheticEvent) => {
     e.preventDefault();
@@ -25,7 +27,8 @@ const SignIn: React.FC = () => {
         .then(loginRes => {
           localStorage.setItem("auth-token", loginRes.data.data.token);
           // console.log(loginRes);
-          alert('success!');            
+          alert('success!');       
+          navigate('/admin');
         })
         .catch((error) => {
             throw new Error(error)
@@ -39,27 +42,6 @@ const SignIn: React.FC = () => {
     }
 
   };
-
-  const handleSignout = async (e: SyntheticEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-
-    try {
-      await axios.get(`${import.meta.env.VITE_SERVER_HOST}/signout`, { withCredentials: true })
-      .then(() => {
-          alert('data updated!');
-      })
-      .catch((error) => {
-          throw new Error(error)
-      })
-      .finally(() => {
-          setIsLoading(false);
-      });
-  } 
-  catch (error: any) {
-      console.error(error);
-  }
-  }
 
   if (isLoading) { 
     return <p>Loading...</p> 

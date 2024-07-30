@@ -5,7 +5,8 @@ const jwt = require("jsonwebtoken");
 const { PrismaClient } = require("@prisma/client");
 const auth = require("../middleware/auth");
 const prisma = new PrismaClient();
-const {setDefaultRole}  = require("../helper/role");
+const {signUp}  = require("../helper/singup");
+
 
 router.route("/signin").post( async function (req, res) {
 
@@ -42,42 +43,37 @@ router.route("/signin").post( async function (req, res) {
 
 });
 
-router.route("/registeradmin").post(async function (req, res) {
+router.route("/signup").post(async function (req, res) {
 
-
-    await setDefaultRole();
-  
-    const getAdminRoleId= await prisma.role.findUnique({
-      where: {
-        slug: 'admin',
-      },
-      select: {
-        id: true
-      },
-    })
-  
-    await prisma.user.create({
-      data:{
-          email: req.body.email,
-          name: req.body.name,
-          password: await bcrypt.hash(req.body.password, Number(process.env.BCRYPT_HASH)),
-          roleId: getAdminRoleId.id
-      }
-    });
+    const roleSlug = "user";
+    let singupFunc = await signUp(req, res, roleSlug);
   
     return res.json(
         {
-            success: true,
-            message: "Admin user created!",
+            success: singupFunc.success,
+            message: singupFunc.message,
             data: {}
         }
     );
   
 });
 
-router.route("/users", auth).get( async function (req, res) {
+router.route("/registeradmin").post(async function (req, res) {
 
-    console.log("usersss");
+    const roleSlug = "admin";
+    let singupFunc = await signUp(req, res, roleSlug);
+  
+    return res.json(
+        {
+            success: singupFunc.success,
+            message: singupFunc.message,
+            data: {}
+        }
+    );
+  
+});
+
+router.route("/users").get(auth, async function (req, res) {
 
     const users = await prisma.user.findMany({
         select: {
@@ -102,7 +98,7 @@ router.route("/users", auth).get( async function (req, res) {
     );
 
 });
-  
+
 // TO CHECK IF TOKEN IS VALID
 router.post("/tokenisvalid", async (req, res) => {
     

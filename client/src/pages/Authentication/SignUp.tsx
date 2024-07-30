@@ -1,35 +1,50 @@
 import React, { useState, SyntheticEvent, useRef } from 'react';
 import { Link } from 'react-router-dom';
-// import Breadcrumb from '../../components/Breadcrumbs/Breadcrumb';
 import LogoDark from '../../images/logo/logo-dark.svg';
 import Logo from '../../images/logo/logo.svg';
+import axios from "axios";
 
-const SignUp: React.FC = () => {
+const Signup: React.FC = () => {
 
   const email = useRef("");
+  const name = useRef("");
   const password = useRef("");
-  const [showAlert, setShowAlert] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e: SyntheticEvent) => {
     e.preventDefault();
+    setIsLoading(true);
   
-    // const res = await signIn("credentials", {
-    //     email: email.current,
-    //     password: password.current,
-    //     redirect: false,
-    // });
-  
-    // if (!res?.error) {
-    //     // router.push(props.callbackUrl ?? "/admin");
-    // } else {
-    //     setShowAlert(true);
-    // }
+    let data = {
+        email: email.current,
+        password: password.current,
+        name: name.current,
+    };
 
+    try {
+        await axios.post(`${import.meta.env.VITE_SERVER_HOST}/signup`, data)
+        .then(() => {
+            alert('data updated!');
+        })
+        .catch((error) => {
+            throw new Error(error)
+        })
+        .finally(() => {
+            setIsLoading(false);
+        });
+    } 
+    catch (error: any) {
+        console.error(error.response.data);
+    }
+
+  };
+
+  if (isLoading) { 
+    return <p>Loading...</p> 
   };
 
   return (
     <>
-      {/* <Breadcrumb pageName="Sign Up" /> */}
 
       <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
         <div className="flex flex-wrap items-center">
@@ -173,19 +188,21 @@ const SignUp: React.FC = () => {
             <div className="w-full p-4 sm:p-12.5 xl:p-17.5">
               <span className="mb-1.5 block font-medium">Start for free</span>
               <h2 className="mb-9 text-2xl font-bold text-black dark:text-white sm:text-title-xl2">
-                Sign Up to TailAdmin
+                SINGUP USER
               </h2>
 
-              <form>
+              <form onSubmit={handleSubmit} >
                 <div className="mb-4">
                   <label className="mb-2.5 block font-medium text-black dark:text-white">
                     Name
                   </label>
                   <div className="relative">
                     <input
+                      onChange={(e) => name.current = e.target.value}
                       type="text"
                       placeholder="Enter your full name"
                       className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                      required
                     />
 
                     <span className="absolute right-4 top-4">
@@ -218,9 +235,11 @@ const SignUp: React.FC = () => {
                   </label>
                   <div className="relative">
                     <input
+                      onChange={(e) => email.current = e.target.value}
                       type="email"
                       placeholder="Enter your email"
                       className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                      required
                     />
 
                     <span className="absolute right-4 top-4">
@@ -249,9 +268,11 @@ const SignUp: React.FC = () => {
                   </label>
                   <div className="relative">
                     <input
+                      onChange={(e) => password.current = e.target.value}
                       type="password"
                       placeholder="Enter your password"
                       className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                      required
                     />
 
                     <span className="absolute right-4 top-4">
@@ -278,7 +299,7 @@ const SignUp: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="mb-6">
+                <div className="hidden mb-6">
                   <label className="mb-2.5 block font-medium text-black dark:text-white">
                     Re-type Password
                   </label>
@@ -375,4 +396,4 @@ const SignUp: React.FC = () => {
   );
 };
 
-export default SignUp;
+export default Signup;

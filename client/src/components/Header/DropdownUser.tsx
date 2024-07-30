@@ -1,5 +1,5 @@
-import { useState, useContext } from 'react';
-import { Link } from 'react-router-dom';
+import { useState, useContext, SyntheticEvent } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import ClickOutside from '../ClickOutside';
 import UserOne from '../../images/user/user-01.png';
 import { UserContext } from '../../router/ProtectedRoute';
@@ -7,6 +7,32 @@ import { UserContext } from '../../router/ProtectedRoute';
 const DropdownUser = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const userContext  = useContext(UserContext);
+  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
+
+  const handleSignout = () => {
+    setIsLoading(true);
+
+    try {
+      setIsLoading(true);
+      let token = localStorage.getItem("auth-token");
+    
+      if (token) {
+          localStorage.setItem("auth-token", "");
+      }
+
+      alert('logout success!');       
+      navigate('/signin');
+    } 
+    catch (error: any) {
+        console.error(error);
+    }
+  };
+
+
+  if (isLoading) { 
+    return <p>Loading...</p> 
+  };
 
   return (
     <ClickOutside onClick={() => setDropdownOpen(false)} className="relative">
@@ -121,7 +147,9 @@ const DropdownUser = () => {
               </Link>
             </li>
           </ul>
-          <button className="flex items-center gap-3.5 px-6 py-4 text-sm font-medium duration-300 ease-in-out hover:text-primary lg:text-base">
+          <button
+            onClick={() => handleSignout()} 
+            className="flex items-center gap-3.5 px-6 py-4 text-sm font-medium duration-300 ease-in-out hover:text-primary lg:text-base">
             <svg
               className="fill-current"
               width="22"

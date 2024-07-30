@@ -17,18 +17,8 @@ const ProtectedRoute = () => {
 
         const checkLoggedIn = async () => {
 
-            let token = localStorage.getItem("auth-token");
-    
-            if (token === null) {
-                localStorage.setItem("auth-token", "");
-                token = "";
-            }
-
             try {
-                await axios.post(`${import.meta.env.VITE_SERVER_HOST}/tokenisvalid`, 
-                    null, 
-                    { headers: {"x-auth-token" :token } }
-                )
+                await axios.post(`${import.meta.env.VITE_SERVER_HOST}/tokenisvalid`)
                 .then(
                     response => {
                         // console.log(response.data);
@@ -52,7 +42,6 @@ const ProtectedRoute = () => {
                 console.error(error);
             }
 
-    
         };
 
         checkLoggedIn();
