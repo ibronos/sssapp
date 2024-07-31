@@ -59,13 +59,19 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
   }, [sidebarExpanded]);
 
 
-  const menuUserAllowedRole = (roleSlug: string) => {
+  const menuUsersAllowedRole = (roleSlug: string) => {
      const allowedRole = ["admin", "verifikator"];
      return allowedRole.includes(roleSlug) ? "" : "hidden";
   }
 
-  if( userContext.user.role.slug == "user" ){
-    // return <h1>Not allowed</h1>
+  const menuUserAllowedRole = (roleSlug: string) => {
+    const allowedRole = ["admin"];
+    return allowedRole.includes(roleSlug) ? "" : "hidden";
+  }
+
+  const menuIzinApprovalAllowedRole = (roleSlug: string) => {
+    const allowedRole = ["admin", "verifikator"];
+    return allowedRole.includes(roleSlug) ? "" : "hidden";
   }
 
   return (
@@ -119,7 +125,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
             <ul className="mb-6 flex flex-col gap-1.5">
              
               {/* <!-- Menu Item User --> */}
-              <div className={menuUserAllowedRole(userContext.user.role.slug)}>
+              <div className={menuUsersAllowedRole(userContext.user.role.slug)}>
                 <SidebarLinkGroup
                   activeCondition={
                     pathname === '/forms' || pathname.includes('forms')
@@ -185,7 +191,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                           }`}
                         >
                           <ul className="mt-4 mb-5.5 flex flex-col gap-2.5 pl-6">
-                            <li>
+                            <li className={menuUserAllowedRole(userContext.user.role.slug)}>
                               <NavLink
                                 to="/admin/user"
                                 className={({ isActive }) =>
@@ -298,26 +304,16 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                         <ul className="mt-4 mb-5.5 flex flex-col gap-2.5 pl-6">
                           <li>
                             <NavLink
-                              to="/admin/user"
+                              to="/admin/izin"
                               className={({ isActive }) =>
                                 'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-white ' +
                                 (isActive && '!text-white')
                               }
                             >
-                              User
+                              Izin
                             </NavLink>
                           </li>
-                          <li>
-                            <NavLink
-                              to="/admin/user-approval"
-                              className={({ isActive }) =>
-                                'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-white ' +
-                                (isActive && '!text-white')
-                              }
-                            >
-                              User Approval
-                            </NavLink>
-                          </li>
+                
                         </ul>
                       </div>
                       {/* <!-- Dropdown Menu End --> */}

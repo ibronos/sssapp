@@ -19,7 +19,8 @@ router.route("/signin").post( async function (req, res) {
     if( user &&  (await bcrypt.compare(req.body.password, user.password)) ) {
 
         // const token = jwt.sign({ id: user.id }, process.env.JWT_KEY);
-        const token = jwt.sign({ id: user.id, email: user.email }, process.env.JWT_KEY, { expiresIn: '1h' });
+        // const token = jwt.sign({ id: user.id, email: user.email }, process.env.JWT_KEY, { expiresIn: '1h' });
+        const token = jwt.sign({ id: user.id, email: user.email }, process.env.JWT_KEY);
 
         return res.json(
             {
@@ -117,7 +118,7 @@ router.route("/users").get(auth, async function (req, res) {
     return res.json(
         {
             success: true,
-            message: "Admin user created!",
+            message: "users",
             data: users
         }
     );

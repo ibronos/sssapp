@@ -16,6 +16,7 @@ model user {
   role role @relation(fields: [role_id], references: [id])
   role_id Int
   is_verified Int @default(0) @db.TinyInt
+  izin izin[]
 }
 
 model role {
@@ -23,4 +24,32 @@ model role {
   slug  String @unique
   name  String
   user user[]
+}
+
+model izin {
+  id    Int     @id @default(autoincrement())
+  name  String
+  detail  String?
+  user user @relation(fields: [user_id], references: [id])
+  user_id Int
+  izin_jenis izin_jenis @relation(fields: [izin_jenis_id], references: [id])
+  izin_jenis_id Int
+  izin_approve izin_approve @relation(fields: [izin_approve_id], references: [id])
+  izin_approve_id Int
+  created_at DateTime @default(now())
+  is_canceled Int @default(0) @db.TinyInt
+}
+
+model izin_jenis {
+  id    Int     @id @default(autoincrement())
+  slug  String @unique
+  name  String
+  izin izin[]
+}
+
+model izin_approve {
+  id    Int     @id @default(autoincrement())
+  slug  String @unique
+  name  String
+  izin izin[]
 }

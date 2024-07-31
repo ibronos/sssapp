@@ -6,6 +6,7 @@ import DefaultLayout from '../layout/DefaultLayout';
 
 import User from '../pages/User';
 import Verifikator from '../pages/Verifikator';
+import Izin from '../pages/Izin';
 
 const AdminRoutes = () => {
     return  (
@@ -30,6 +31,26 @@ const AdminRoutes = () => {
                             <>
                                 <PageTitle title="Dashboard | Verifikator" />
                                 <Verifikator />
+                            </>
+                        }
+                    />
+
+                    <Route
+                        path="izin"
+                        element={
+                            <>
+                                <PageTitle title="Dashboard | Izin" />
+                                <Izin />
+                            </>
+                        }
+                    />
+
+                    <Route
+                        path="izin-approval"
+                        element={
+                            <>
+                                <PageTitle title="Dashboard | Izin Approval" />
+                                {/* <Verifikator /> */}
                             </>
                         }
                     />
